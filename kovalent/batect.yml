@@ -1,0 +1,31 @@
+containers:
+  jdk-build-env:
+    image: openjdk:13.0.2-jdk
+    volumes:
+      - local: .
+        container: /code
+        options: cached
+      - type: cache
+        name: gradle-cache
+        container: /container-user/home/.gradle
+    working_directory: /code
+    run_as_current_user:
+      enabled: true
+      home_directory: /container-user/home
+    environment:
+      GRADLE_OPTS: -Dorg.gradle.daemon=false
+
+tasks:
+  kotlin-build:
+    group: kotlin
+    description: builds the kotlin project
+    run:
+      container: jdk-build-env
+      command: ./gradlew build
+
+  kotlin-test:
+    group: kotlin
+    description: runs the kotlin project tests
+    run:
+      container: jdk-build-env
+      command: ./gradlew test

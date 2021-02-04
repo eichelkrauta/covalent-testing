@@ -1,0 +1,3 @@
+include:
+  - path: "./kovalent/batect.yml"
+    type: file
