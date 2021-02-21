@@ -3,11 +3,18 @@ package kovalent.database
 import kovalent.domain.TodoItem
 
 class InMemoryTodoDatabase: TodoDatabase() {
+
+    private val todos = mutableListOf<TodoItem>()
+
     override fun createTodo(todo: TodoItem) {
-        TODO("Not yet implemented")
+        todos.add(todo)
     }
 
     override fun getAll(): List<TodoItem> {
-        TODO("Not yet implemented")
+        return todos
+    }
+
+    fun clearAll() {
+        todos.clear()
     }
 }

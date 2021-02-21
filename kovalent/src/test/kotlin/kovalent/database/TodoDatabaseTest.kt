@@ -3,33 +3,48 @@ package kovalent.database
 import kovalent.domain.TodoItem
 import kovalent.domain.default
 import org.amshove.kluent.`should contain same`
-import org.junit.jupiter.api.Disabled
+import org.jetbrains.exposed.sql.deleteAll
+import org.jetbrains.exposed.sql.transactions.transaction
+import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 
 abstract class TodoDatabaseTest {
 
     abstract val database: TodoDatabase
 
-    @Disabled
     @Test
     fun `a todo can be persisted in the database`() {
         val newTodo = TodoItem.default
-        val expectedId = newTodo.id
+        val expectedTitle = newTodo.title
 
         database.createTodo(newTodo)
 
         val todos = database.getAll()
-        val todoIds = todos.map { it.id }
-        todoIds `should contain same` listOf(expectedId)
+        val todoTitles = todos.map { it.title }
+        todoTitles `should contain same` listOf(expectedTitle)
     }
 }
 
 class PostgresTodoDatabaseTest : TodoDatabaseTest() {
-    override val database: TodoDatabase
-        get() = PostgresTodoDatabase()
+
+    private val postgresDatabase = PostgresTodoDatabase()
+    override val database: TodoDatabase = postgresDatabase
+
+    @BeforeEach
+    fun setup() {
+        transaction {
+            TodoItemTable.deleteAll()
+        }
+    }
 }
 
 class InMemoryTodoDatabaseTest : TodoDatabaseTest() {
-    override val database: TodoDatabase
-        get() = InMemoryTodoDatabase()
+
+    private val inMemoryDatabase = InMemoryTodoDatabase()
+    override val database: TodoDatabase = inMemoryDatabase
+
+    @BeforeEach
+    fun setup() {
+        inMemoryDatabase.clearAll()
+    }
 }

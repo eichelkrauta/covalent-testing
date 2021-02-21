@@ -14,6 +14,16 @@ containers:
       home_directory: /container-user/home
     environment:
       GRADLE_OPTS: -Dorg.gradle.daemon=false
+      POSTGRES_HOSTNAME: postgres
+
+  postgres:
+    image: postgres
+    ports:
+      - container: 5432
+        local: 5432
+    environment:
+      POSTGRES_USER: root
+      POSTGRES_PASSWORD: password
 
 tasks:
   kotlin-build:
@@ -23,7 +33,14 @@ tasks:
       container: jdk-build-env
       command: ./gradlew build --continuous
 
+  kotlin-dependencies:
+    group: kotlin
+    run:
+      container: postgres
+
   kotlin-test:
+    dependencies:
+      - postgres
     group: kotlin
     description: runs the kotlin project tests
     run:
@@ -31,6 +48,8 @@ tasks:
       command: ./gradlew test --continuous
 
   kotlin-run:
+    dependencies:
+      - postgres
     group: kotlin
     description: runs the kotlin project
     run:
