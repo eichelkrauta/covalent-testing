@@ -21,11 +21,18 @@ tasks:
     description: builds the kotlin project
     run:
       container: jdk-build-env
-      command: ./gradlew build
+      command: ./gradlew build --continuous
 
   kotlin-test:
     group: kotlin
     description: runs the kotlin project tests
     run:
       container: jdk-build-env
-      command: ./gradlew test
+      command: ./gradlew test --continuous
+
+  kotlin-run:
+    group: kotlin
+    description: runs the kotlin project
+    run:
+      container: jdk-build-env
+      command: ./gradlew run --continuous
