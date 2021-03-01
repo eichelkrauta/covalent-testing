@@ -1,11 +1,11 @@
-package kovalent.database
+package kalendar.database
 
-import kovalent.domain.TodoItem
+import kalendar.domain.Event
 import org.jetbrains.exposed.sql.*
 import org.jetbrains.exposed.sql.transactions.transaction
 import java.time.LocalDate
 
-class PostgresTodoDatabase: TodoDatabase() {
+class PostgresEventDatabase: EventDatabase() {
 
     companion object {
         private val postgresHost = System.getenv("POSTGRES_HOSTNAME") ?: "localhost"
@@ -15,7 +15,7 @@ class PostgresTodoDatabase: TodoDatabase() {
             transaction {
                 addLogger(StdOutSqlLogger)
 
-                SchemaUtils.create(TodoItemTable)
+                SchemaUtils.create(EventTable)
             }
         }
     }
@@ -24,20 +24,21 @@ class PostgresTodoDatabase: TodoDatabase() {
         db
     }
 
-    override fun createTodo(todo: TodoItem) {
+    override fun create(todo: Event) {
         transaction {
-            TodoItemDAO.new {
+            EventDao.new {
                 title = todo.title
                 description = todo.description
-                dueDate = todo.dueDate.toString()
+                starts = todo.starts
+                ends = todo.ends
             }
         }
     }
 
-    override fun getAll(): List<TodoItem>
+    override fun getAll(): List<Event>
         = transaction {
-            TodoItemDAO.all().map {
-                TodoItem(it.id.value, it.title, it.description, LocalDate.parse(it.dueDate))
+            EventDao.all().map {
+                Event(it.id.value, it.title, it.description, it.starts, it.ends)
             }
         }
 

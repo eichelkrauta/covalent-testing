@@ -7,7 +7,7 @@ plugins {
 }
 
 application {
-    mainClassName = "kovalent.MainKt"
+    mainClassName = "kalendar.MainKt"
 }
 
 repositories {
@@ -22,6 +22,7 @@ dependencies {
     implementation("org.postgresql:postgresql:42.2.19")
     implementation("org.jetbrains.exposed:exposed-core:0.29.1")
     implementation("org.jetbrains.exposed:exposed-dao:0.29.1")
+    implementation("org.jetbrains.exposed:exposed-java-time:0.29.1")
     implementation("org.jetbrains.exposed:exposed-jdbc:0.29.1")
 
     testRuntime("org.junit.jupiter:junit-jupiter-engine:5.4.2")
