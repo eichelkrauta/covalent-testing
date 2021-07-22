@@ -4,6 +4,7 @@ import kalendar.database.InMemoryEventDatabase
 import kalendar.domain.*
 import org.amshove.kluent.`should be equal to`
 import org.amshove.kluent.`should contain same`
+import org.junit.jupiter.api.Disabled
 import org.junit.jupiter.api.Test
 import java.time.LocalDateTime
 import java.time.LocalTime
@@ -14,11 +15,7 @@ class SchedulerTest {
 
     @Test
     fun `scheduling a daily event`() {
-        val event = Event.default.copy(
-            title = "Standup",
-            starts = Monday.at(9, 0).am(),
-            ends = Monday.at(9, 30).am()
-        )
+        val event = Standup
 
         scheduler.recurringDaily(event, 5)
 
@@ -31,11 +28,7 @@ class SchedulerTest {
 
     @Test
     fun `schedule a weekly event`() {
-        val expectedEvent = Event.default.copy(
-            title = "Stakeholder Sync",
-            starts = Monday.at(10, 0).am(),
-            ends = Monday.at(11, 0).am()
-        )
+        val expectedEvent = StakeholderSync
 
         scheduler.recurringWeekly(expectedEvent, 2)
 
@@ -43,6 +36,18 @@ class SchedulerTest {
             size `should be equal to` 2
             map { it.starts } `should contain same` onThisWeekAndNext(expectedEvent.starts)
             map { it.ends } `should contain same` onThisWeekAndNext(expectedEvent.ends)
+        }
+    }
+
+    @Test
+    fun `shows whats happening on next Monday`() {
+        scheduler.recurringDaily(Standup, 14)
+        scheduler.recurringWeekly(StakeholderSync, 2)
+
+        val schedule = scheduler.happeningOn(Monday.plusWeeks(1))
+
+        with(schedule) {
+            map { it.title } `should contain same` listOf(Standup.title, StakeholderSync.title)
         }
     }
 

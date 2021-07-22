@@ -1,7 +1,7 @@
 package kalendar.database
 
-import kalendar.domain.Event
-import kalendar.domain.default
+import kalendar.domain.*
+import org.amshove.kluent.`should be equal to`
 import org.amshove.kluent.`should contain same`
 import org.jetbrains.exposed.sql.deleteAll
 import org.jetbrains.exposed.sql.transactions.transaction
@@ -13,7 +13,7 @@ abstract class EventDatabaseTest {
     abstract val database: EventDatabase
 
     @Test
-    fun `a todo can be persisted in the database`() {
+    fun `an event can be persisted in the database`() {
         val newEvent = Event.default
         val expectedTitle = newEvent.title
 
@@ -21,6 +21,17 @@ abstract class EventDatabaseTest {
 
         val events = database.getAll()
         events.map { it.title } `should contain same` listOf(expectedTitle)
+    }
+
+    @Test
+    fun `a list of events can be queried by the day`() {
+        database.create(Standup)
+        database.create(TechHuddle)
+        database.create(WorkingSession)
+
+        with(database.getEventsOnDay(Tuesday)) {
+            map { it.title } `should contain same` listOf(TechHuddle.title)
+        }
     }
 }
 

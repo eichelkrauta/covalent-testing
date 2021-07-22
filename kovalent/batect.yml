@@ -45,7 +45,7 @@ tasks:
     description: runs the kotlin project tests
     run:
       container: jdk-build-env
-      command: ./gradlew test --continuous
+      command: ./gradlew test --continuous --info
 
   kotlin-run:
     dependencies:
