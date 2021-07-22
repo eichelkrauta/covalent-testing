@@ -13,4 +13,13 @@ class Scheduler(private val database: EventDatabase) {
             ))
         }
     }
+
+    fun recurringWeekly(event: Event, weeks: Int) {
+        (0 until weeks).forEach {
+            database.create(event.copy(
+                starts = event.starts + Period.ofWeeks(it),
+                ends = event.ends + Period.ofWeeks(it)
+            ))
+        }
+    }
 }

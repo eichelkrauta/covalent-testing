@@ -29,6 +29,23 @@ class SchedulerTest {
         }
     }
 
+    @Test
+    fun `schedule a weekly event`() {
+        val expectedEvent = Event.default.copy(
+            title = "Stakeholder Sync",
+            starts = Monday.at(10, 0).am(),
+            ends = Monday.at(11, 0).am()
+        )
+
+        scheduler.recurringWeekly(expectedEvent, 2)
+
+        with(database.getAll()) {
+            size `should be equal to` 2
+            map { it.starts } `should contain same` onThisWeekAndNext(expectedEvent.starts)
+            map { it.ends } `should contain same` onThisWeekAndNext(expectedEvent.ends)
+        }
+    }
+
     private fun onEachWeekday(time: LocalTime): List<LocalDateTime> {
         return listOf(
             Monday.at(time),
@@ -36,6 +53,13 @@ class SchedulerTest {
             Wednesday.at(time),
             Thursday.at(time),
             Friday.at(time),
+        )
+    }
+
+    private fun onThisWeekAndNext(dateTime: LocalDateTime): List<LocalDateTime> {
+        return listOf(
+            dateTime,
+            dateTime.plusWeeks(1)
         )
     }
 }
